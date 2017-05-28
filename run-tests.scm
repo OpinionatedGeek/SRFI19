@@ -1,12 +1,5 @@
 ;; Problems to investigate:
 ;;
-;; There's no format character for outputting the day of the month. There are only
-;; options to output the day of month zero-padded or blank-padded. There's no
-;; unpadded option.
-;;
-;; There's no option to output the suffix of the day of the month, e.g. "st" for 31,
-;; or "th" for 28, so you can output "31st" or "28th".
-;;
 ;; There's a problem with ~f - standard implementation which sometimes throws an error
 ;; saying:
 ;;   "invalid type, expected Number: #f"
