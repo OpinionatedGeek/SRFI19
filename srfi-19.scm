@@ -77,6 +77,120 @@
 ;; 'fractional part'. Will Fitzgerald 5/16/2003.
 ;; --------------------------------------------------------------
 
+;; Implement Chibi-specific bridge code for Chibi Scheme, otherwise use the
+;; standard implementation.
+
+(import (chibi) (chibi time))
+(cond-expand
+ (chibi
+  ;;Why does the import not work here?
+  ;;(import (chibi) (chibi time))
+
+  ;; Some functions the SRFI expects to have available
+  (define (current-milliseconds)
+    (/ (current-jiffy) (/ (jiffies-per-second) 1000)))
+
+  (define (seconds->date value)
+    (seconds->time value))
+
+  (define (date-time-zone-offset value)
+    (time-offset value))
+
+  (define (current-process-milliseconds)
+    (floor (/ (timeval-microseconds (resource-usage-time (get-resource-usage))) 1000)))
+
+  ;; I don't see any way to access garbage collection time in Chibi, and it's only
+  ;; mentioned as an extension to the SRFI, not a requirement, so just throw an
+  ;; error if someone tries to use it.
+  (define (current-gc-milliseconds)
+    (error "Not implemented."))
+
+  (define-record-type time
+    (_make-time type nanosecond second)
+    time?
+    (type time-type set-time-type!)
+    (nanosecond time-nanosecond set-time-nanosecond!)
+    (second time-second set-time-second!))
+
+  ;; Sometimes make-time is called with #f for one or more parameters, so we need to handle that.
+  (define (boolean-safe-div x y)
+    (if (and x y)
+        (quotient x y)
+        #f))
+
+  (define (boolean-safe-mod x y)
+    (if (and x y)
+        (remainder x y)
+        #f))
+
+  (define (boolean-safe-plus x y)
+    (if (and x y)
+        (+ x y)
+        #f))
+
+  (define (make-time type nanosecond second)
+    (let* ((seconds-adjustment (boolean-safe-div nanosecond tm:nano))
+           (nsec (boolean-safe-mod nanosecond tm:nano))
+           (seconds (boolean-safe-plus second seconds-adjustment)))
+      (_make-time type nsec seconds)))
+
+  (define-record-type date
+    (make-date nanosecond second minute hour day month year zone-offset)
+    date?
+    (nanosecond date-nanosecond set-date-nanosecond!)
+    (second date-second set-date-second!)
+    (minute date-minute set-date-minute!)
+    (hour date-hour set-date-hour!)
+    (day date-day set-date-day!)
+    (month date-month set-date-month!)
+    (year date-year set-date-year!)
+    (zone-offset date-zone-offset set-date-zone-offset!)))
+ (else
+  ;; Moved from later in the file to be in our single cond-expand.
+  ;; ----8<--------8<--------8<--------8<----
+  ;;; the time structure; creates the accessors, too.
+  ;;; wf: changed to match srfi documentation. uses mzscheme structures & inspectors
+
+  (define-struct time (type nanosecond second) (make-inspector))
+
+  ;; thanks, Martin Gasbichler ...
+  ;; ----8<--------8<--------8<--------8<----
+  ;; End of moved block.
+
+
+  ;; Moved from later in the file to be in our single cond-expand.
+  ;; ----8<--------8<--------8<--------8<----
+  ;; -- date structures
+  (define-struct date (nanosecond second minute hour day month year zone-offset) (make-inspector))
+  ;; ----8<--------8<--------8<--------8<----
+  ;; End of moved block.
+
+
+  ;; Moved from later in the file to be in our single cond-expand.
+  ;; ----8<--------8<--------8<--------8<----
+  (define (set-date-second! date val)
+    (tm:time-error 'set-date-second! 'dates-are-immutable date))
+
+
+  (define (set-date-minute! date val)
+    (tm:time-error 'set-date-minute! 'dates-are-immutable date))
+
+  (define (set-date-day! date val)
+    (tm:time-error 'set-date-day! 'dates-are-immutable date))
+
+  (define (set-date-month! date val)
+    (tm:time-error 'set-date-month! 'dates-are-immutable date))
+
+  (define (set-date-year! date val)
+    (tm:time-error 'set-date-year! 'dates-are-immutable date))
+
+  (define (set-date-zone-offset! date val)
+    (tm:time-error 'set-date-zone-offset! 'dates-are-immutable date))
+  ;; ----8<--------8<--------8<--------8<----
+  ;; End of moved block.
+  ))
+;; End of cond-expand.
+
 (define-syntax receive
   (syntax-rules ()
     ((receive formals expression body ...)
@@ -123,6 +237,10 @@
                                               "June" "July" "August"
                                               "September" "October"
                                               "November" "December"))
+
+(define tm:ordinal-suffix-alist '((1  . "st") (2  . "nd") (3  . "rd")
+                                  (21 . "st") (22 . "nd") (23 . "rd")
+                                  (31 . "st")))
 
 (define tm:locale-pm "PM")
 (define tm:locale-am "AM")
@@ -180,7 +298,9 @@
   (let ( (port (open-input-file filename))
 	 (table '()) )
     (let loop ((line (read-line port)))
-      (if (not (eq? line eof))
+      ;; Fix for Chibi version - use (eof-object? line) instead of (eq? line eof) since
+      ;; Chibi doesn't define eof symbol.
+      (if (not (eof-object? line))
 	  (begin
 	    (let* ( (data (read (open-input-string (string-append "(" line ")"))))
 		    (year (car data))
@@ -245,17 +365,16 @@
 	(lsd  tm:leap-second-table))))
 
 
-;;; the time structure; creates the accessors, too.
-;;; wf: changed to match srfi documentation. uses mzscheme structures & inspectors
-
-(define-struct time (type nanosecond second) (make-inspector))
-
-;; thanks, Martin Gasbichler ...
-
+;; Fix in Chibi version - standard implementation had parameters the wrong
+;; way around for make-time.
+;;(define (copy-time time)
+;;  (make-time (time-type time)
+;;	     (time-second time)
+;;	     (time-nanosecond time)))
 (define (copy-time time)
   (make-time (time-type time)
-	     (time-second time)
-	     (time-nanosecond time)))
+	     (time-nanosecond time)
+	     (time-second time)))
 
 
 ;;; current-time
@@ -565,11 +684,6 @@
   (set-time-type! time-in time-monotonic)
   time-in)
 
-
-;; -- date structures
-
-(define-struct date (nanosecond second minute hour day month year zone-offset) (make-inspector))
-
 ;; redefine setters
 
 (define tm:set-date-nanosecond! set-date-nanosecond!)
@@ -580,25 +694,6 @@
 (define tm:set-date-month! set-date-month!)
 (define tm:set-date-year! set-date-year!)
 (define tm:set-date-zone-offset! set-date-zone-offset!)
-
-(define (set-date-second! date val)
-  (tm:time-error 'set-date-second! 'dates-are-immutable date))
-
-
-(define (set-date-minute! date val)
-  (tm:time-error 'set-date-minute! 'dates-are-immutable date))
-
-(define (set-date-day! date val)
-  (tm:time-error 'set-date-day! 'dates-are-immutable date))
-
-(define (set-date-month! date val)
-  (tm:time-error 'set-date-month! 'dates-are-immutable date))
-
-(define (set-date-year! date val)
-  (tm:time-error 'set-date-year! 'dates-are-immutable date))
-
-(define (set-date-zone-offset! date val)
-  (tm:time-error 'set-date-zone-offset! 'dates-are-immutable date))
 
 ;; gives the julian day which starts at noon.
 (define (tm:encode-julian-day-number day month year)
@@ -1029,6 +1124,9 @@
 		     (begin
 		       (display tm:locale-number-separator port)
 		       (display (substring ns 2 le) port))))))
+   ;; Non-standard additional directive - output the date with no padding.
+   (cons #\g (lambda (date pad-with port)
+	       (display (date-day date) port)))
    (cons #\h (lambda (date pad-with port)
 	       (display (date->string date "~b") port)))
    (cons #\H (lambda (date pad-with port)
@@ -1090,6 +1188,9 @@
 	       (display (integer->char 9) port)))
    (cons #\T (lambda (date pad-with port)
 	       (display (date->string date "~H:~M:~S") port)))
+   (cons #\u (lambda (date pad-with port)
+	       (display (let ((suffix (assq (date-day date) tm:ordinal-suffix-alist)))
+                          (if suffix (cdr suffix) "th")) port)))
    (cons #\U (lambda (date pad-with port)
 	       (if (> (tm:days-before-first-week date 0) 0)
 		   (display (tm:padding (+ (date-week-number date 0) 1)
