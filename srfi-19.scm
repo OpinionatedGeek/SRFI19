@@ -366,16 +366,11 @@
 	(lsd  tm:leap-second-table))))
 
 
-;; Fix in Chibi version - standard implementation had parameters the wrong
-;; way around for make-time.
-;;(define (copy-time time)
-;;  (make-time (time-type time)
-;;	     (time-second time)
-;;	     (time-nanosecond time)))
 (define (copy-time time)
   (make-time (time-type time)
-	     (time-nanosecond time)
-	     (time-second time)))
+             (time-nanosecond time)
+	     (time-second time)
+	     ))
 
 
 ;;; current-time
