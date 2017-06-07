@@ -1,6 +1,7 @@
 ;; SRFI-19: Time Data Types and Procedures.
 ;;
-;; Copyright (C) I/NET, Inc. (2000, 2002, 2003). All Rights Reserved.
+;; Original work Copyright (C) I/NET, Inc. (2000, 2002, 2003). All Rights Reserved.
+;; Modified work Copyright (C) 2017 Geoff Taylor.
 ;;
 ;; Permission is hereby granted, free of charge, to any person obtaining
 ;; a copy of this software and associated documentation files (the
