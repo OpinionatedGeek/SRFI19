@@ -32,7 +32,7 @@
 ;; Problem seems to be (number->string) returns 9e-09 but the standard implementation
 ;; expects a formatted number with a decimal point.
 
-(import (scheme small) (chibi test))
+(import (scheme small) (chibi) (chibi test) (prefix (chibi time) chibi:))
 
 (load "srfi-19.scm")
 

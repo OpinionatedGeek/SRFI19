@@ -81,24 +81,23 @@
 ;; Implement Chibi-specific bridge code for Chibi Scheme, otherwise use the
 ;; standard implementation.
 
-(import (chibi) (chibi time))
 (cond-expand
  (chibi
-  ;;Why does the import not work here?
-  ;;(import (chibi) (chibi time))
-
   ;; Some functions the SRFI expects to have available
+  (define current-seconds chibi:current-seconds)
+
   (define (current-milliseconds)
     (/ (current-jiffy) (/ (jiffies-per-second) 1000)))
 
   (define (seconds->date value)
-    (seconds->time value))
+    (chibi:seconds->time value))
 
   (define (date-time-zone-offset value)
-    (time-offset value))
+    (chibi:time-offset value))
 
   (define (current-process-milliseconds)
-    (floor (/ (timeval-microseconds (resource-usage-time (get-resource-usage))) 1000)))
+    (floor (/ (chibi:timeval-microseconds
+               (chibi:resource-usage-time (chibi:get-resource-usage))) 1000)))
 
   ;; I don't see any way to access garbage collection time in Chibi, and it's only
   ;; mentioned as an extension to the SRFI, not a requirement, so just throw an

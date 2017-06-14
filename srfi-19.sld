@@ -43,5 +43,9 @@
           time-utc->julian-day time-utc->modified-julian-day time-utc->time-monotonic time-utc->time-monotonic!
           time-utc->time-tai time-utc->time-tai! date->string string->date
   )
-  (import (scheme small) (chibi) (chibi time))
+  (import (scheme small))
+  (cond-expand
+   (chibi
+    (import (chibi) (prefix (chibi time) chibi:)))
+   (else #f))
   (include "srfi-19.scm"))
