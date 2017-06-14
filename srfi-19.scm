@@ -146,6 +146,16 @@
     (year date-year set-date-year!)
     (zone-offset date-zone-offset set-date-zone-offset!)))
  (else
+  ;; Simple R&RS approximation of time in process. It's very rough, so other schemes
+  ;; should probably use their own primitives to come up with more accurate values.
+  (define (current-milliseconds)
+    (/ (current-jiffy) (/ (jiffies-per-second) 1000)))
+
+  (define _srfi19-load-time (current-milliseconds))
+
+  (define (current-process-milliseconds)
+    (- (current-milliseconds) _srfi19-load-time))
+
   ;; Moved from later in the file to be in our single cond-expand.
   ;; ----8<--------8<--------8<--------8<----
   ;;; the time structure; creates the accessors, too.
