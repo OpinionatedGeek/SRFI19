@@ -151,10 +151,10 @@
   (define (current-milliseconds)
     (/ (current-jiffy) (/ (jiffies-per-second) 1000)))
 
-  (define _srfi19-load-time (current-milliseconds))
+  (define srfi19-load-time (current-milliseconds))
 
   (define (current-process-milliseconds)
-    (- (current-milliseconds) _srfi19-load-time))
+    (- (current-milliseconds) srfi19-load-time))
 
   ;; Moved from later in the file to be in our single cond-expand.
   ;; ----8<--------8<--------8<--------8<----
