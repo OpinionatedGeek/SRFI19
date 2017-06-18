@@ -23,5 +23,23 @@
       Many thanks to Will Fitzgerald and the SRFI Editors for providing the SRFI and the standard
       implementation code.
     </p>
+    <h2>Extensions to SRFI 19</h2>
+    <p>
+      This implementation has two new format directives that I'd really rather were better supported
+      everywhere.
+    </p>
+    <ul>
+      <li>
+        <strong>~g</strong> - day of month. It just outputs the day of the month (1...31). The other two
+        standard directives both specify either blank padding or zero padding but there's no option
+        for no padding.
+      </li>
+      <li>
+        <strong>~u</strong> - day ordinal suffix. Outputs the locale-specific suffix for the day of the
+        month. For example "rd" for 3, "th" for 6, or "st" for 21. This allows you to format dates
+        as "Sunday, 1st of January 2017". It's possible to insert the "st" in such a format string
+        manually but that doesn't seem a clean approach.
+      </li>
+    </ul>
   </body>
 </html>
