@@ -22,6 +22,11 @@
 ;; OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 ;; WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
+;;> Chibi Scheme implementation of
+;;> \hyperlink["https://srfi.schemers.org/srfi-19/srfi-19.html"]{SRFI 19}
+;;> based on the wibble
+;;> \hyperlink["https://srfi.schemers.org/srfi-19/srfi-19.scm"]{standard implementation}.
+
 (define-library
   (srfi 19)
   (export time-duration time-monotonic time-process time-tai time-thread time-utc

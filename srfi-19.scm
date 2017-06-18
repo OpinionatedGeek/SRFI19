@@ -217,11 +217,22 @@
     ((_ val default-value)
      (if (null? val) default-value (car val)))))
 
+;;> Symbol representing TAI time.
 (define time-tai 'time-tai)
+
+;;> Symbol representting UTC time.
 (define time-utc 'time-utc)
+
+;;> Symbol representing monotonic time.
 (define time-monotonic 'time-monotonic)
+
+;;> Symbol representing time spent in current thread.
 (define time-thread 'time-thread)
+
+;;> Symbol representing time spent in current process.
 (define time-process 'time-process)
+
+;;> Symbol representing Time duration.
 (define time-duration 'time-duration)
 
 ;; example of extension (MZScheme specific)
@@ -375,7 +386,9 @@
 	(lsd  tm:leap-second-table))))
 
 
-(define (copy-time time)
+;;> \procedure{(copy-time time)}
+;;> Creates a new time object, with the same time \var{type}, \var{nanosecond}, and \var{second} as \var{time}.
+(define (copy-time timeX)
   (make-time (time-type time)
              (time-nanosecond time)
 	     (time-second time)

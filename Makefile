@@ -15,10 +15,9 @@ test:
 
 package: $(TARGET)
 
-$(TARGET): *.scm *.sld
+$(TARGET): *.scm *.sld *.html
 	snow-chibi package --version=0.1 \
 		--authors="Geoff Taylor <srfi-19@opinionatedgeek.com>" \
 		--maintainers="Geoff Taylor <srfi-19@opinionatedgeek.com>" \
-		--license=mit --doc-from-scribble \
-		--description="A port of the standard SRFI-19 implementation to Chibi Scheme." \
+		--license=mit --doc=srfi-19.html \
 		--test=run-tests.scm srfi-19.sld
