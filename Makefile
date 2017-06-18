@@ -19,6 +19,6 @@ $(TARGET): *.scm *.sld
 	snow-chibi package --version=0.1 \
 		--authors="Geoff Taylor <srfi-19@opinionatedgeek.com>" \
 		--maintainers="Geoff Taylor <srfi-19@opinionatedgeek.com>" \
-		--license=bsd --doc-from-scribble \
+		--license=mit --doc-from-scribble \
 		--description="A port of the standard SRFI-19 implementation to Chibi Scheme." \
 		--test=run-tests.scm srfi-19.sld
