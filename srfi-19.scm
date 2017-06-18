@@ -388,7 +388,7 @@
 
 ;;> \procedure{(copy-time time)}
 ;;> Creates a new time object, with the same time \var{type}, \var{nanosecond}, and \var{second} as \var{time}.
-(define (copy-time timeX)
+(define (copy-time time)
   (make-time (time-type time)
              (time-nanosecond time)
 	     (time-second time)
