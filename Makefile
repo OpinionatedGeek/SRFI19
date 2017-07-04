@@ -1,4 +1,4 @@
-TARGET = srfi-19-0.2.tgz
+TARGET = srfi-19-1.0.tgz
 
 default: package
 
@@ -7,16 +7,19 @@ all: package
 clean:
 	rm -f $(TARGET)
 
-install: $(TARGET)
-	snow-chibi install $(TARGET)
-
 test:
 	chibi-scheme run-tests.scm
 
 package: $(TARGET)
 
+install: package
+	snow-chibi install $(TARGET)
+
+upload: package
+	snow-chibi upload $(TARGET)
+
 $(TARGET): *.scm *.sld *.html
-	snow-chibi package --version=0.2 \
+	snow-chibi package --version=1.0 \
 		--authors="Will Fitzgerald" \
 		--maintainers="Geoff Taylor <srfi-19@opinionatedgeek.com>" \
 		--description="Implementation of SRFI 19 'Time Data Types and Procedures'" \
