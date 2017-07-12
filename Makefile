@@ -1,4 +1,4 @@
-TARGET = srfi-19-1.0.0.tgz
+TARGET = srfi-19-1.0.1.tgz
 
 default: package
 
@@ -19,7 +19,7 @@ upload: package
 	snow-chibi upload $(TARGET)
 
 $(TARGET): *.scm *.sld *.html
-	snow-chibi package --version=1.0.0 \
+	snow-chibi package --version=1.0.1 \
 		--authors="Will Fitzgerald" \
 		--maintainers="Geoff Taylor <srfi-19@opinionatedgeek.com>" \
 		--description="Implementation of SRFI 19 'Time Data Types and Procedures'" \
