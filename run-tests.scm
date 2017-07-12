@@ -38,6 +38,15 @@
 
 (test-begin "SRFI 19")
 
+(define (tm:date= d1 d2)
+  (and (= (date-year d1) (date-year d2))
+       (= (date-month d1) (date-month d2))
+       (= (date-day d1) (date-day d2))
+       (= (date-hour d1) (date-hour d2))
+       (= (date-second d1) (date-second d2))
+       (= (date-nanosecond d1) (date-nanosecond d2))
+       (= (date-zone-offset d1) (date-zone-offset d2))))
+
 
 (test-group
  "[Existence Check] Constants"
@@ -306,16 +315,6 @@
  (test-assert "(test-one-utc-tai-edge 1045789645 32 32) should pass all checks"
    (test-one-utc-tai-edge 1045789645 32 32)) ;; about now ...
  )
-
-
-(define (tm:date= d1 d2)
-  (and (= (date-year d1) (date-year d2))
-       (= (date-month d1) (date-month d2))
-       (= (date-day d1) (date-day d2))
-       (= (date-hour d1) (date-hour d2))
-       (= (date-second d1) (date-second d2))
-       (= (date-nanosecond d1) (date-nanosecond d2))
-       (= (date-zone-offset d1) (date-zone-offset d2))))
 
 
 (test-group
@@ -1125,5 +1124,24 @@
   (test-assert "Second date creation from string"
     (tm:date= (make-date 0 14 13 12 1 1 2017 0)
               (string->date "~ Sunday 01  1 12:13:14Z 17" "~~ ~A ~m ~e ~k:~M:~S~z ~y")))))
+
+(test-group
+ "Round-tripping"
+ (let ((test-date (make-date 15 14 13 12 1 1 2017 0)))
+   (test-assert "Date equals itself"
+     (tm:date= test-date test-date))
+   (test-assert "UTC roundtrip conversion"
+     (tm:date= test-date
+               (time-utc->date (date->time-utc test-date) (date-zone-offset test-date))))
+   (test-assert "TAI roundtrip conversion"
+     (tm:date= test-date
+               (time-tai->date (date->time-tai test-date) (date-zone-offset test-date))))
+   ;; Shouldn't this round-trip too?
+   #;
+   (test-assert "Monotonic roundtrip conversion"
+   (tm:date= test-date
+   (time-monotonic->date (date->time-monotonic test-date) (date-zone-offset test-date)))))
+ )
+
 
 (test-end)

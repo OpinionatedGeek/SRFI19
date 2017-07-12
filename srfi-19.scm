@@ -95,6 +95,9 @@
   (define (date-time-zone-offset value)
     (chibi:time-offset value))
 
+  (define inexact->exact exact)
+  (define exact->inexact inexact)
+
   (define (current-process-milliseconds)
     (floor (/ (chibi:timeval-microseconds
                (chibi:resource-usage-time (chibi:get-resource-usage))) 1000)))
